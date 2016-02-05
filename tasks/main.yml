@@ -3,8 +3,6 @@
   apt:
     name: monit
     state: present
-  notify:
-    - stop monit
   become: yes
   become_user: root
 
@@ -19,6 +17,13 @@
     dest: /tmp/monit-{{ monit_version }}
     copy: no
 
+- name: stop monit
+  service:
+    name: monit
+    state: stopped
+  become: yes
+  become_user: root
+
 - name: install the binary
   command: cp /tmp/monit-{{ monit_version }}/bin/monit /usr/bin/monit
   become: yes
@@ -31,7 +36,13 @@
     owner: root
     group: root
     mode: 0600
-  notify:
-    - restart monit
   become: yes
   become_user: root
+
+- name: start monit
+  service:
+    name: monit
+    state: started
+  become: yes
+  become_user: root
+
