@@ -1,0 +1,37 @@
+---
+- name: install the Ubuntu version
+  apt:
+    name: monit
+    state: present
+  notify:
+    - stop monit
+  become: yes
+  become_user: root
+
+- name: get the archive
+  get_url:
+    url: "{{ monit_download_url }}"
+    dest: /tmp/monit-{{ monit_version }}-linux-x64.tar.gz
+
+- name: decompress archive
+  unarchive:
+    src: /tmp/monit-{{ monit_version }}-linux-x64.tar.gz
+    dest: /tmp/monit-{{ monit_version }}
+    copy: no
+
+- name: install the binary
+  command: cp /tmp/monit-{{ monit_version }}/bin/monit /usr/bin/monit
+  become: yes
+  become_user: root
+
+- name: install the config
+  template:
+    src: "{{ monit_config }}"
+    dest: /etc/monit/monitrc
+    owner: root
+    group: root
+    mode: 0600
+  notify:
+    - restart monit
+  become: yes
+  become_user: root
