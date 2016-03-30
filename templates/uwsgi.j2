@@ -1,0 +1,6 @@
+check process uwsgi with pidfile /var/run/uwsgi/app/{{ uwsgi_app_name }}/pid
+    start program = "/etc/init.d/uwsgi start"
+    stop program = "/etc/init.d/uwsgi stop"
+    if failed unixsocket /var/run/uwsgi/app/{{ uwsgi_app_name }}/socket then restart
+    if failed unixsocket /var/run/uwsgi/app/{{ uwsgi_app_name }}/socket then alert
+    depends on postgres
